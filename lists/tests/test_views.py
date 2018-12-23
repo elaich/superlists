@@ -5,7 +5,7 @@ from django.utils.html import escape
 
 from lists.models import Item, List
 from lists.views import home_page
-from lists.forms import ItemForm, EMPTY_ITEM_ERROR
+from lists.forms import ItemForm, ExistingListItemForm, EMPTY_ITEM_ERROR
 
 from unittest import skip
 
@@ -32,7 +32,7 @@ class ListViewTest(TestCase):
         list_ = List.objects.create()
         response = self.client.get(f'/lists/{list_.id}/')
 
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
         self.assertContains(response, 'name="text"')
 
 
@@ -105,9 +105,8 @@ class ListViewTest(TestCase):
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
 
-    @skip
     def test_for_duplicate_item_validation_error_end_up_on_lists_page(self):
         list1 = List.objects.create()
         item1 = Item.objects.create(list=list1, text='me awesome')
